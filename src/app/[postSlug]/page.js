@@ -8,9 +8,13 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import DivisionGroupsDemo from "@/components/DivisionGroupsDemo";
 import CircularColorsDemo from "@/components/CircularColorsDemo";
 import CodeSnippet from "@/components/CodeSnippet";
+import { notFound } from "next/navigation";
 
 async function BlogPost({ params }) {
   const blog = await loadBlogPost(params.postSlug);
+  if (!blog) {
+    notFound();
+  }
   return (
     <article className={styles.wrapper}>
       <BlogHero
@@ -33,6 +37,9 @@ async function BlogPost({ params }) {
 
 export async function generateMetadata({ params }) {
   const blog = await loadBlogPost(params.postSlug);
+  if (!blog) {
+    return null;
+  }
   return {
     title: blog.frontmatter.title,
     description: blog.frontmatter.abstract,

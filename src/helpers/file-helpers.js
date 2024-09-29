@@ -23,12 +23,18 @@ export async function getBlogPostList() {
 }
 
 export const loadBlogPost = React.cache(async (slug) => {
-  const rawContent = await readFile(`/content/${slug}.mdx`);
-  console.log("called", slug);
+  // Wrapping this operation in a try/catch so that it stops
+  // throwing an error if the file can't be found. Instead,
+  // we'll return `null`, and the caller can figure out how
+  // to handle this situation.
+  try {
+    const rawContent = await readFile(`/content/${slug}.mdx`);
+    const { data: frontmatter, content } = matter(rawContent);
 
-  const { data: frontmatter, content } = matter(rawContent);
-
-  return { frontmatter, content };
+    return { frontmatter, content };
+  } catch (err) {
+    return null;
+  }
 });
 
 function readFile(localPath) {
